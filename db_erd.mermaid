@@ -1,0 +1,126 @@
+erDiagram
+    sectors ||--o{ stocks : "분류"
+    stocks ||--o{ watchlist : "등록됨"
+    stocks ||--o{ price_snapshots : "시세"
+    stocks ||--o{ supply_demand : "수급(국내)"
+    stocks ||--o{ financial_statements : "재무"
+    stocks ||--o{ dividends : "배당"
+    stocks ||--o{ valuation_snapshots : "밸류에이션/스크리너"
+    stocks ||--o{ news_stock_relations : "영향관계 연결"
+    stocks ||--o{ future_events : "관련 이벤트(nullable)"
+    stocks ||--o{ volatility_alerts_log : "변동성 신호"
+    news ||--o{ news_stock_relations : "연결"
+    future_events ||--o{ event_leading_indicators : "선행지표"
+
+    sectors {
+        int id PK
+        string sector_name
+        string industry_name
+        string region
+    }
+    stocks {
+        int id PK
+        string ticker
+        string name
+        string market
+        string exchange
+        int sector_id FK
+        string currency
+    }
+    watchlist {
+        int id PK
+        int stock_id FK
+        string list_type
+        numeric avg_price
+        numeric quantity
+    }
+    price_snapshots {
+        bigint id PK
+        int stock_id FK
+        timestamp captured_at
+        numeric price
+        numeric change_pct
+        bigint volume
+    }
+    market_indices {
+        bigint id PK
+        string index_code
+        timestamp captured_at
+        numeric value
+        numeric change_pct
+    }
+    news {
+        bigint id PK
+        text title
+        string source
+        timestamp published_at
+        string region
+        string category
+        string sentiment
+    }
+    news_stock_relations {
+        bigint id PK
+        bigint news_id FK
+        int stock_id FK
+        string relation_layer
+        numeric relevance_score
+    }
+    supply_demand {
+        bigint id PK
+        int stock_id FK
+        date trade_date
+        bigint foreign_net
+        bigint institution_net
+        bigint individual_net
+    }
+    financial_statements {
+        bigint id PK
+        int stock_id FK
+        int fiscal_year
+        int fiscal_quarter
+        numeric revenue
+        numeric operating_income
+        numeric net_income
+        numeric debt_ratio
+        numeric roe
+    }
+    dividends {
+        bigint id PK
+        int stock_id FK
+        int fiscal_year
+        numeric dividend_per_share
+        numeric dividend_yield
+        numeric payout_ratio
+        int consecutive_years
+    }
+    valuation_snapshots {
+        bigint id PK
+        int stock_id FK
+        date captured_at
+        numeric per
+        numeric pbr
+        numeric shareholder_return_ratio
+        boolean passes_good_company_filter
+    }
+    future_events {
+        int id PK
+        string event_name
+        string event_type
+        date event_date
+        int related_stock_id FK
+        text description
+    }
+    event_leading_indicators {
+        int id PK
+        int event_id FK
+        string indicator_name
+        text description
+    }
+    volatility_alerts_log {
+        bigint id PK
+        int stock_id FK
+        date alert_date
+        numeric change_pct
+        string primary_cause_layer
+        text cause_summary
+    }
